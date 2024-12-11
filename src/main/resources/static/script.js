@@ -268,7 +268,13 @@ async function validateTeamName(teamName) {
 
 async function registerTeam() {
     const teamName = document.getElementById('team-name').value.trim();
-    const captainIdx = document.querySelector('input[name="captain"]:checked').value;
+    const selectedCaptain = document.querySelector('input[name="captain"]:checked');
+
+    if (!selectedCaptain) {
+        showErrorNotification('Seleccione un jugador como capitán del equipo.');
+        return;
+    }
+
     try {
         const response = await fetch('/teams/register', {
             method: 'POST',
@@ -278,19 +284,23 @@ async function registerTeam() {
             body: JSON.stringify({
                 name: teamName,
                 players: players,
-                captainIdx: captainIdx
+                captainIdx: selectedCaptain.value
             })
         });
 
         switch (response.status) {
             case 200:
                 showSuccessNotification('Equipo registrado exitosamente.');
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
                 break;
 
             case 400:
                 showErrorNotification('El registro no pudo completarse. Algunos datos proporcionados son inválidos o incompletos. Revise la información e intente nuevamente.');
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
                 break;
 
             default:
